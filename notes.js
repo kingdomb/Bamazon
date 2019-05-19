@@ -122,4 +122,53 @@ inquirer
   askQuestion();
   _________________________________________________________________
 
+  var mysql = require("mysql");
+
+var connection = mysql.createConnection({
+  host: "localhost",
+
+  // Your port; if not 3306
+  port: 3306,
+
+  // Your username
+  user: "root",
+
+  // Your password
+  password: "2020Mu$t",
+  database: "ice_creamDB"
+});
+
+connection.connect(function(err) {
+  if (err) throw err;
+  console.log("connected as id " + connection.threadId);
+  connection.end();
+});
+_________________________________________________________________
+
+var mysql = require("mysql");
+
+var connection = mysql.createConnection({
+  host: "mysqldatabase.c4momngxuutb.us-east-1.rds.amazonaws.com",
+  // Your port; if not 3306
+  port: 3306,
+
+  // Your username
+user: "KingdomB",
+
+  // Your password
+  password: "2020Mu$tang$",
+  database: "bamazon_DB"
+});
+
+connection.connect(function(err) {
+  if (err) throw err;
+  console.log("connected as id " + connection.threadId);
+  connection.end();
+});
+
+_________________________________________________________________
+
+/c/Users/KING/gtcbc/Bamazon
   
+//mysql -h localhost -u root -p
+//mysql -h mysqldatabase.c4momngxuutb.us-east-1.rds.amazonaws.com -u KingdomB -p
