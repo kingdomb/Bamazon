@@ -172,3 +172,8 @@ _________________________________________________________________
   
 //mysql -h localhost -u root -p
 //mysql -h mysqldatabase.c4momngxuutb.us-east-1.rds.amazonaws.com -u KingdomB -p
+DROP DATABASE Flowers;
+source bamazon.sql;
+use bamazon_DB;
+show tables;
+
