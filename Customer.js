@@ -1,110 +1,97 @@
-require('dotenv').config();
-const mysql = require('mysql');
-const inquirer = require('inquirer');
-const config = require('./config');
+require("dotenv").config();
+const mysql = require("mysql");
+const inquirer = require("inquirer");
+const config = require("./config");
 
-var connection = mysql.createConnection({
-    host: config.db_host,
-    port: config.db_port,
-    user: config.db_user,
-    password: config.db_password,
-    database: config.db_name
+let connection = mysql.createConnection({
+  host: config.db_host,
+  port: config.db_port,
+  user: config.db_user,
+  password: config.db_password,
+  database: config.db_name
+});
+
+connection.connect(function(err) {
+  if (err) throw err;
+  console.log("connected as id " + connection.threadId);
+});
+
+function displayProducts() {
+  let query = "SELECT * FROM inventory";
+  connection.query(query, function(err, res) {
+    if (err) {
+      throw err;
+    } 
+    else {
+      console.log("\n\n" + "Welcome to Bamazon!" + "\n");
+      console.table(res);
+    }
+    setTimeout(runSearch, 2000);
   });
+}
 
-  connection.connect(function(err) {
-    if (err) throw err;
-    console.log("connected as id " + connection.threadId);
-    //connection.end();
-  });
-
-//   // console.table();
-// connection.query('SELECT * FROM inventory', (err, data)=>{
-//   if (err) throw err;
-//   console.table(data);
-// });
+displayProducts();
 
 function runSearch() {
   inquirer
     .prompt({
-      name: "action",
-      type: "list",
-      message: "What is the ID of the item that you would like to purchase?",
-      choices: [
-        "Find songs by artist",
-        "Find all artists who appear more than once",
-        "Find data within a specific range",
-        "Search for a specific song",
-        "exit"
-      ]
+      type: "input",
+      name: "item",
+      message:
+        "\n\n" +
+        "What is the Item_ID of the item that you would like to purchase?",
+      validate: function(value) {
+        if (isNaN(value) === false) {
+          return true;
+        }
+        return false;
+      }
     })
     .then(function(answer) {
-      switch (answer.action) {
-      case "Find songs by artist":
-        artistSearch();
-        break;
+      let item = answer.item;
 
-      case "Find all artists who appear more than once":
-        multiSearch();
-        break;
+      console.log(item);
 
-      case "Find data within a specific range":
-        rangeSearch();
-        break;
+      var query = "SELECT Item_Id, Stock_Quantity FROM inventory WHERE ?";
 
-      case "Search for a specific song":
-        songSearch();
-        break;
-          
-      case "exit":
-        connection.end();
-        break;
-      }
+      connection.query(query, { Item_Id: item }, function(err, res) {
+        let available = res[0].Stock_Quantity;
+
+        buyItem(item, available);
+      });
     });
 }
 
-
-function rangeSearch() {
+function buyItem(item, available) {
   inquirer
-    .prompt([
-      {
-        name: "start",
-        type: "input",
-        message: "Enter starting position: ",
-        validate: function(value) {
-          if (isNaN(value) === false) {
-            return true;
-          }
-          return false;
+    .prompt({
+      type: "input",
+      name: "count",
+      message:
+        "\n\n" +
+        "How many would you like to purchase; we only have " +
+        available +
+        " in stock?",
+      validate: function(value) {
+        if (isNaN(value) === false) {
+          return true;
         }
-      },
-      {
-        name: "end",
-        type: "input",
-        message: "Enter ending position: ",
-        validate: function(value) {
-          if (isNaN(value) === false) {
-            return true;
-          }
-          return false;
-        }
+        return false;
       }
-    ])
+    })
     .then(function(answer) {
-      var query = "SELECT position,song,artist,year FROM top5000 WHERE position BETWEEN ? AND ?";
-      connection.query(query, [answer.start, answer.end], function(err, res) {
-        for (var i = 0; i < res.length; i++) {
-          console.log(
-            "Position: " +
-              res[i].position +
-              " || Song: " +
-              res[i].song +
-              " || Artist: " +
-              res[i].artist +
-              " || Year: " +
-              res[i].year
-          );
-        }
-        runSearch();
+      console.log(answer.count);
+
+      let purchasing = answer.count;
+
+      let newQuantity = parseInt((available -= purchasing));
+
+      var query = "UPDATE inventory SET Stock_Quantity =?   WHERE Item_Id=?";
+      connection.query(query, [newQuantity, item], function(err, res) {
+        console.log(
+          "Your purchase was successful. Thanks for shopping Bamazon!"
+        );
       });
+      setTimeout(displayProducts, 3000);
     });
 }
