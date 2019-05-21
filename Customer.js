@@ -50,7 +50,6 @@ function runSearch() {
     .then(function(answer) {
       let item = answer.item;
 
-      console.log(item);
 
       var query = "SELECT Item_Id, Stock_Quantity FROM inventory WHERE ?";
 
@@ -80,7 +79,6 @@ function buyItem(item, available) {
       }
     })
     .then(function(answer) {
-      console.log(answer.count);
 
       let purchasing = answer.count;
 
