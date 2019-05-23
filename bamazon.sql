@@ -1,11 +1,11 @@
-/* Schema for SQL database/table. We haven't discussed this type of file yet */
+/* Schema for SQL database/table.*/
 DROP DATABASE IF EXISTS bamazon_DB;
 
 /* Create database */
 CREATE DATABASE bamazon_DB;
 USE bamazon_DB;
 
-/* Create new table with a primary key that auto-increments, and a text field */
+/* Create new table with a primary key that auto-increments.*/
 CREATE TABLE inventory (
   Item_ID INT NOT NULL AUTO_INCREMENT,
   Product_Name VARCHAR(250) NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE inventory (
   PRIMARY KEY (Item_ID)
 );
 
-/* Insert 3 Rows into your new table */
+/* Insert 5 Rows into your new table */
 INSERT INTO inventory (Product_Name, Department_Name, Price, Stock_Quantity)
 VALUES ("Boxed Baking Soda", "Grocery Non-Perishable", .75, 65);
 
